@@ -37,14 +37,17 @@ jobs:
           if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
             echo "PORTAL_BUCKET_NAME=portal123.cicd.com.br"  >> "$GITHUB_OUTPUT"
             echo "CLOUDFRONT_DISTRIBUTION=E2I4UWSTEM5TQW"  >> "$GITHUB_OUTPUT"
+            echo "AMBIENTE=PROD" >> "$GITHUB_OUTPUT"
           fi
           if [[ "${{github.base_ref}}" == "stage" || "${{github.ref}}" == "refs/heads/stage" ]]; then
             echo "PORTAL_BUCKET_NAME=portal123.stage.cicd.com.br"  >> "$GITHUB_OUTPUT"
             echo "CLOUDFRONT_DISTRIBUTION=EGBFQVEFIC4IQ"  >> "$GITHUB_OUTPUT"
+            echo "AMBIENTE=HOMOL" >> "$GITHUB_OUTPUT"
           fi
           if [[ "${{github.base_ref}}" == "dev" || "${{github.ref}}" == "refs/heads/dev" ]]; then
             echo "PORTAL_BUCKET_NAME=portal123.dev.cicd.com.br"  >> "$GITHUB_OUTPUT"
             echo "CLOUDFRONT_DISTRIBUTION=E1ZEKQTMQZDO2D"  >> "$GITHUB_OUTPUT"
+            echo "AMBIENTE=DEV" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Cache node modules
@@ -65,6 +68,9 @@ jobs:
         name: List the state of node modules
         continue-on-error: true
         run: npm list
+
+      - name: replace environment value
+        run: sed -i 's/##AMBIENTE##/${{steps.setVars.outputs.AMBIENTE}}/g' ./src/components/HelloWorld.vue
 
       - name: npm install
         run: npm install
